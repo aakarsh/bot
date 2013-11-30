@@ -164,39 +164,39 @@ void Terrain::specifyGeometry() {
 
 void Terrain::drawTerrain() {  
       this->camera->setup_perspective(windowWidth,windowHeight);
-        glLoadIdentity();
+      glLoadIdentity();
         
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
-	glMatrixMode(GL_MODELVIEW);
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_DEPTH);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
+      glMatrixMode(GL_MODELVIEW);
+      glEnable(GL_DEPTH_TEST);
+      glEnable(GL_DEPTH);
 
-         glEnable(GL_TEXTURE_2D);
-         glBindTexture(GL_TEXTURE_2D, textureId);
+      glEnable(GL_TEXTURE_2D);
+      glBindTexture(GL_TEXTURE_2D, textureId);
         
-         glLoadIdentity();
+      glLoadIdentity();
 
-        VertexMatrix grid = *(this->vertexGrid());
-        VecMatrix normals = *(this->vertexNormals());
+      VertexMatrix grid = *(this->vertexGrid());
+      VecMatrix normals = *(this->vertexNormals());
         
-        if(surfaceNormalsEnabled)
-          normals =*(this->surfaceNormals());
+      if(surfaceNormalsEnabled)
+        normals =*(this->surfaceNormals());
 
-        camera->setup_lookat(normals,this->width,this->length);
+      camera->setup_lookat(normals,this->width,this->length);
 
-        float scale = 1*this->scale_factor;
-        glScalef(scale, scale, scale);        
+      float scale = 1*this->scale_factor;
+      glScalef(scale, scale, scale);        
         
-        if(displayListEnabled){
-          glCallList(dl_id);
-        } else{
-          specifyGeometry();
-        }
+      if(displayListEnabled){
+        glCallList(dl_id);
+      } else{
+        specifyGeometry();
+      }
         
-        light->enable();
-        glDisable(GL_TEXTURE_2D);
+      light->enable();
+      glDisable(GL_TEXTURE_2D);
         
-	glutSwapBuffers();  
+      glutSwapBuffers();  
 }
 
 

@@ -1,17 +1,12 @@
 // Lab3.cpp : Terrain Mapping
-//
-
 #include <stdlib.h>
 #include <stdio.h>
-
 #include <GL/glut.h>
 #include <math.h>
-
 #include <iostream>
 #include <vector>
 
 #include "ppm_canvas.h"
-
 #include "util.h"
 #include "terrain.h"
 #include "android.h"
@@ -47,45 +42,79 @@ float ambientColour[3];
 
 bool firstPersonMode = true;
 
-Light* light;
-Terrain*  terrain;
+class Environment{
+public:
+  Light* light;
+  
+  Terrain* terrain;
+  vector<android*> droids;
 
+  
+  bool animate;
+  int key_frame;
+  animation_mode  current_animation;
+  int camera_angle;
+  int bot_count;
+  static const int MAX_KEY_FRAME = 10000000;
+
+  Environment():
+    animate(false),
+    key_frame(0),
+    current_animation(WALKING),
+    camera_angle(0),
+    bot_count(1){
+    
+  }
+
+  void env_setup(char* height_file, char* texture_file);
+  //void animate();
+  void drawAndroids();
+};
+
+
+Environment* env;
 //BOT Glboal variables
-bool animate = false;
-int key_frame = 0;
-animation_mode  current_animation = WALKING;
-int camera_angle = 0;
-int bot_count = 1;
-int MAX_KEY_FRAME = 10000000;
-
-vector<android*> droids;
 
 int pmouse_x;
 int pmouse_y;
 
 
-void drawAndroids(){
-  if(droids.size() <= bot_count){
-    for(int i  = droids.size(); i < bot_count ; i++) {       
-      android* a = new android((i*6)% 16,0,i/3*8);
-      droids.push_back(a);
-    }
-  }  
+bool env_first = false;
 
-  if(animate)
-    key_frame++;
-  
-  for(int j = 0; j < droids.size(); j++) {       
-    droids[j]->mode = current_animation;  
-    droids[j]->animate(key_frame);
-    droids[j]->draw();
-  }
+void Environment::env_setup(char* height_file, char* texture_file){
+  canvas_t texture;
+  printf("Loading file '%s'... ", height_file);
+  ppmLoadCanvas(height_file, &height);  
+  printf("Done.\n");
+  printf("Loading file '%s'... ", texture_file);
+  ppmLoadCanvas(texture_file, &texture);          
+  env->terrain = new Terrain(windowWidth,windowHeight, texture, height);         
+
 }
+
+void Environment::drawAndroids(){
+    if(droids.size() <= bot_count){
+      for(int i  = droids.size(); i < bot_count ; i++) {       
+        android* a = new android((i*6)% 16,0,i/3*8);
+        droids.push_back(a);
+      }
+    }  
+
+    if(animate)
+      key_frame++;
+  
+    for(int j = 0; j < droids.size(); j++) {       
+      droids[j]->mode = current_animation;  
+      droids[j]->animate(key_frame);
+      droids[j]->draw();
+    }
+  }
+      
 
 
 
 void cb_idle() {	  
-  terrain->drawTerrain();
+  env->terrain->drawTerrain();
   glutPostRedisplay();  
 }
 
@@ -93,14 +122,14 @@ void cb_display() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glLoadIdentity();
-  terrain->drawTerrain();    
+  env->terrain->drawTerrain();    
   glFlush();
   glutSwapBuffers(); // for smoother animation
 }
 
 
 void cb_reshape(int w, int h) {
-  terrain->camera->setup_perspective(w,h);
+  env->terrain->camera->setup_perspective(w,h);
 }
 
 void cb_mouseclick(int button, int state, int x, int y)
@@ -128,8 +157,7 @@ void cb_mouseclick(int button, int state, int x, int y)
         else if(state == GLUT_UP)
             mouseRightDown = false;
     }
-}
-
+} 
 
 void cb_mousemove(int x, int y)
 {
@@ -148,7 +176,7 @@ void cb_mousemove(int x, int y)
       cameraDistance -= dy * 0.2f;
       mouseY = y;
     }
-  terrain->mouseChange(mouseLeftDown,x,y,dx,dy);
+  env->terrain->mouseChange(mouseLeftDown,x,y,dx,dy);
 }
 
 void display_help() {
@@ -170,7 +198,6 @@ void display_help() {
   cout<<"+ - scale in  "<<endl;
   cout<<"- - scale out  "<<endl;
   cout<<"x,y,z,X,Y,Z - adjust eye location"<<endl;
-
 }
 
 void cb_keyboard(unsigned char key, int x, int y) {
@@ -178,69 +205,69 @@ void cb_keyboard(unsigned char key, int x, int y) {
  double eyeDirection[3] = {0,0,0};
  double v [3] ;
  Vec3d* vec;
- Camera * camera = terrain->camera;
+ Camera * camera = env->terrain->camera;
  
  switch(key) {
  case 'h':
    display_help();
  case 'd':
-   terrain->toggleDisplayList();
+   env->terrain->toggleDisplayList();
  case 'l':    
-   terrain->toggleMouseLighting();
+   env->terrain->toggleMouseLighting();
    break;
  case 'w':  
-   terrain->camera->forward(20);
+   env->terrain->camera->forward(20);
    break;
  case 's': 
-   terrain->camera->backward(20); 
+   env->terrain->camera->backward(20); 
    break;
  case 'p':
-   terrain->toggleMousePanning();
+   env->terrain->toggleMousePanning();
    break;
  case '0':
-   terrain->camera->zNear=.1; 
-   terrain->camera->zFar=1000; 
-   terrain->camera->fov = 90;
+   env->terrain->camera->zNear=.1; 
+   env->terrain->camera->zFar=1000; 
+   env->terrain->camera->fov = 90;
    break;
  case 'g':
-   terrain->camera->zNear+=50;
+   env->terrain->camera->zNear+=50;
    break;
  case 'G':
-   terrain->camera->zNear-=10;
+   env->terrain->camera->zNear-=10;
    break;
  case '1':
-   terrain->toggleMouseMode(FIRST_PERSON);
+   env->terrain->toggleMouseMode(FIRST_PERSON);
    break;
  case 'f':
-   terrain->camera->zFar+=200;
-   cout<<"Far clipping plane set to "<<terrain->camera->zFar<<endl;
+   env->terrain->camera->zFar+=200;
+   cout<<"Far clipping plane set to "<<env->terrain->camera->zFar<<endl;
    break;
  case 'F':
-   terrain->camera->zFar-=200;
-   cout<<"Far clipping plane set to "<<terrain->camera->zFar<<endl;
+   env->terrain->camera->zFar-=200;
+   cout<<"Far clipping plane set to "<<env->terrain->camera->zFar<<endl;
    break;
  case 'v':
-   terrain->camera->fov +=20;
-   cout<<"Field of View set to  "<<terrain->camera->fov<<endl;
+   env->terrain->camera->fov +=20;
+   cout<<"Field of View set to  "<<env->terrain->camera->fov<<endl;
    break;
  case 'V':
-   terrain->camera->fov -=20;
-   cout<<"Field of View set to  "<<terrain->camera->fov<<endl;
+   env->terrain->camera->fov -=20;
+   cout<<"Field of View set to  "<<env->terrain->camera->fov<<endl;
    break;
  case 'e':
    adjustEye = !adjustEye;
    break;
  case 't':
-   terrain->toggleTexture();
+   env->terrain->toggleTexture();
    break;
  case 'n':
-   terrain->toggleSurfaceNormals();
+   env->terrain->toggleSurfaceNormals();
    break;
   case '+': 
-    terrain->scale_factor*=1.1;
+    env->terrain->scale_factor*=1.1;
     break;
   case '-': 
-    terrain->scale_factor/=1.1;
+    env->terrain->scale_factor/=1.1;
     break;
  case 'x':
    camera->eyeLocation[0]+=10;
@@ -279,15 +306,22 @@ int main(int argc, char** argv) {
 	glEnable(GL_TEXTURE_2D);
 
         canvas_t texture;
+
+        env = new Environment();
+
 	if (argc == 3) {
-          printf("Loading file '%s'... ", argv[1]);
+
+          char* height_file = argv[1];
+          char* texture_file = argv[0];
+          
+          printf("Loading file '%s'... ", height_file);
           ppmLoadCanvas(argv[1], &height);
 
           printf("Done.\n");
-          printf("Loading file '%s'... ", argv[2]);
+          printf("Loading file '%s'... ", texture_file);
           ppmLoadCanvas(argv[2], &texture);
           
-          terrain = new Terrain(windowWidth,windowHeight, texture, height);
+          env->terrain = new Terrain(windowWidth,windowHeight, texture, height);
           
 	} else {
           printf("Usage: %s terrain.ppm texture.ppm\n", argv[0]);
