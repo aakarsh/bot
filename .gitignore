@@ -1,0 +1,13 @@
+*.dll
+*~
+Lab2
+Lab1MSVC/
+#*#
+GPATH
+GRTAGS
+GTAGS
+Lab1
+Lab3
+Lab3.vcxproj
+Lab3.vcxproj.filters
+Lab3.vcxproj.user
