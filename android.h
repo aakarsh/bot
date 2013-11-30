@@ -1,5 +1,8 @@
+
 #ifndef AND_H
 #define AND_H
+#include <math.h>
+
 enum animation_mode {WALKING,JUMP};
 
 class arm{

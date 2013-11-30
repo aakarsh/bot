@@ -14,6 +14,7 @@
 
 #include "util.h"
 #include "terrain.h"
+#include "android.h"
 
 using namespace std;
 
@@ -49,9 +50,38 @@ bool firstPersonMode = true;
 Light* light;
 Terrain*  terrain;
 
+//BOT Glboal variables
+bool animate = false;
+int key_frame = 0;
+animation_mode  current_animation = WALKING;
+int camera_angle = 0;
+int bot_count = 1;
+int MAX_KEY_FRAME = 10000000;
+
+vector<android*> droids;
 
 int pmouse_x;
 int pmouse_y;
+
+
+void drawAndroids(){
+  if(droids.size() <= bot_count){
+    for(int i  = droids.size(); i < bot_count ; i++) {       
+      android* a = new android((i*6)% 16,0,i/3*8);
+      droids.push_back(a);
+    }
+  }  
+
+  if(animate)
+    key_frame++;
+  
+  for(int j = 0; j < droids.size(); j++) {       
+    droids[j]->mode = current_animation;  
+    droids[j]->animate(key_frame);
+    droids[j]->draw();
+  }
+}
+
 
 
 void cb_idle() {	  
