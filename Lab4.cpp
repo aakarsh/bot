@@ -1,4 +1,3 @@
-// Lab3.cpp : Terrain Mapping
 #include <stdlib.h>
 #include <stdio.h>
 #include <GL/glut.h>
@@ -21,7 +20,7 @@ bool keyState[256] = { false };
 
 int windowWidth = 1000, windowHeight = 900;
 
-canvas_t height;
+
 canvas_t skin;
 GLuint textureId;
 
@@ -44,8 +43,11 @@ bool firstPersonMode = true;
 
 class Environment{
 public:
+
   Light* light;
   
+  canvas_t height;
+  canvas_t texture;  
   Terrain* terrain;
   vector<android*> droids;
 
@@ -82,14 +84,12 @@ int pmouse_y;
 bool env_first = false;
 
 void Environment::env_setup(char* height_file, char* texture_file){
-  canvas_t texture;
   printf("Loading file '%s'... ", height_file);
   ppmLoadCanvas(height_file, &height);  
   printf("Done.\n");
   printf("Loading file '%s'... ", texture_file);
   ppmLoadCanvas(texture_file, &texture);          
-  env->terrain = new Terrain(windowWidth,windowHeight, texture, height);         
-
+  env->terrain = new Terrain(windowWidth,windowHeight,texture,height);
 }
 
 void Environment::drawAndroids(){
@@ -305,23 +305,23 @@ int main(int argc, char** argv) {
 
 	glEnable(GL_TEXTURE_2D);
 
-        canvas_t texture;
+        //        canvas_t texture;
 
-        env = new Environment();
 
+        
 	if (argc == 3) {
 
           char* height_file = argv[1];
-          char* texture_file = argv[0];
+          char* texture_file = argv[2];
+          env = new Environment();
+          env->env_setup(height_file,texture_file);
           
-          printf("Loading file '%s'... ", height_file);
-          ppmLoadCanvas(argv[1], &height);
-
-          printf("Done.\n");
-          printf("Loading file '%s'... ", texture_file);
-          ppmLoadCanvas(argv[2], &texture);
-          
-          env->terrain = new Terrain(windowWidth,windowHeight, texture, height);
+          // printf("Loading file '%s'... ", height_file);
+          // ppmLoadCanvas(argv[1], &height);
+          // printf("Done.\n");
+          // printf("Loading file '%s'... ", texture_file);
+          // ppmLoadCanvas(argv[2], &texture);          
+          // env->terrain = new Terrain(windowWidth,windowHeight, texture, height);
           
 	} else {
           printf("Usage: %s terrain.ppm texture.ppm\n", argv[0]);

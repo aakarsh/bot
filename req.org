@@ -1,0 +1,50 @@
+
+Description
+
+Lab 4 consists of integrating your code from lab 2 with your code from
+lab 3. In other words, you will make your creature move across 3-D
+terrain. For this lab there are new texture and skin files to use for
+the terrain, but there is no starter code, as you'll be re-using your
+code from labs 2 and 3. The specifics of what you need to implement
+are listed in the criteria section below. This lab is out of 65
+points, with a maximum possible score of 70/65.
+
+Files
+
+The lab 4 terrain and skin files have been posted on the eCommons page
+under "Resources" (link). Apparently we can't attach files to course
+web pages any more :(. If you don't have eCommons access email the TA:
+pmawhorter+grf13@gmail.com.
+
+Tips & Guidelines
+
+Starting from your lab 3 code is probably easiest.
+
+Try to set things up so that you can just call draw_terrain (or
+whatever function you used in lab 3 to draw the heightmap) and then
+translate, rotate, and scale before calling draw_animal (or whatever
+function you used in lab 2 to draw your animal).
+
+This means that your draw_animal function will have to be completely
+independent.
+
+Note that to use the new terrain and skin files you'll need to make
+sure that your code doesn't depend on the size of the old terrain/skin
+files from lab 3 (i.e. you probably shouldn't be dividing by 512
+anywhere, instead use "((float)terrain.width)" ).
+
+Also note that you don't need to make lighting work for your animal.
+
+
+5 Provide a help message that explains the controls of your program.
+5 Animal from lab 2 is working.
+5 Height map with normals and texture from lab 3 is working.
+5 Animal is drawn along with terrain.
+5 Animal is at an appropriate scale (the size of 1-3 grid cells of the terrain).
+10 Animal is at the correct height to stand on the terrain. This does not need to be perfect, but the body of the animal should be just above the terrain, while the legs (or other apendeges) should be touching the terrain. Moslty submerged or obviously floating positions will not get full credit.
+5 The animal is rotated according to the normal of the terrain wherever it is placed.
+10 The animal moves across the terrain while animating, either randomly or on a fixed path.
+5 Multiple (at least 3) copies of the animal are displayed.
+5 Provide a control that causes the camera to look at your animal and allows the user to cycle through looking at each copy.
+5 The copies of the animal move independently along different paths (or using different random walks).
+5 Provide controls that can start, pause, and reset the motion of your animals.
