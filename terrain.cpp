@@ -10,27 +10,12 @@
 #include <math.h>
 #include "ppm_canvas.h"
 #include "util.h"
+#include "geometry.h"
 
+#include "android.h"
 #include "terrain.h"
 
 using namespace std;
-
-
-
-Vec3d cross(Vec3d e1 , Vec3d e2){
-  return Vec3d(e1.y*e2.z - e1.z*e2.y,
-               e1.z*e2.x - e1.x*e2.z,
-               e1.x*e2.y - e1.y*e2.x);  
-}
-
-Vec3d normal(Vertex v1 , Vertex v2,Vertex v3) {
-  Vec3d e1(v1.x- v2.x,v1.y- v2.y,v1.z - v2.z);
-  Vec3d e2(v2.x- v3.x,v2.y- v3.y,v2.z- v3.z);
-  Vec3d n = cross(e1,e2);
-  n.normalize();
-  return n;
-}
-
 
 
 double Terrain::getHeight(int x,int z) {
@@ -112,8 +97,7 @@ VecMatrix* Terrain::surfaceNormals(){
   return &surface_normals;
 }
 
-
-void Terrain:: load_texture(canvas_t map) {
+void Terrain::load_texture(canvas_t map) {
   glEnable(GL_TEXTURE_2D);
   glGenTextures(1, &textureId);
   glBindTexture(GL_TEXTURE_2D, textureId);
@@ -131,10 +115,11 @@ void Terrain::specifyGeometry() {
         
   if(surfaceNormalsEnabled)
     normals =*(this->surfaceNormals());  
-  
+
   for(int z = 0; z < this->length; z+=1) {
     glBegin(GL_TRIANGLE_STRIP);                
-    for(int x = 0; x+3 < this->width; x+=1) {
+    for(int x = 0; x+3 < this->width ; x+=1) {
+      
       Vertex* v1 =grid[z][x];                  
       Vertex* v2 = grid[z][x+1];
       Vertex* v3 = grid[z][x+2];                  
@@ -153,19 +138,18 @@ void Terrain::specifyGeometry() {
       if(textureEnabled)
         glTexCoord2f(v3->x/this->width,v3->z/this->length);                  
       normal->glNormal();
-      v3->gl();                  
+      v3->gl();
+      
     }
     glEnd();
-  }        
-  
+  }          
 }
-
 
 
 void Terrain::drawTerrain() {  
       this->camera->setup_perspective(windowWidth,windowHeight);
       glLoadIdentity();
-        
+      
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
       glMatrixMode(GL_MODELVIEW);
       glEnable(GL_DEPTH_TEST);
@@ -187,16 +171,40 @@ void Terrain::drawTerrain() {
       float scale = 1*this->scale_factor;
       glScalef(scale, scale, scale);        
         
-      if(displayListEnabled){
-        glCallList(dl_id);
-      } else{
-        specifyGeometry();
-      }
-        
+       if(displayListEnabled){
+         glCallList(dl_id);         
+       } else{
+         specifyGeometry();
+       }      
+      
       light->enable();
-      glDisable(GL_TEXTURE_2D);
-        
+      glDisable(GL_TEXTURE_2D);        
       glutSwapBuffers();  
+
+      glPushMatrix();
+      glScalef(.2,.2,.2);
+      droid->mode = WALKING;  
+      droid->animate(key_frame++);
+      droid->draw();
+      glPopMatrix();
+
+      for(int i  = 0 ; i <  objects.size() ; i++)  {        
+        glPushMatrix();        
+        glScalef(objects[i]->scale(),
+                 objects[i]->scale(),
+                 objects[i]->scale());
+        
+        /*
+           - normal 
+           - height
+           - x,z -> 
+         */
+        Vertex p(0,0,0);
+        Vec3d n(0,1,0);
+        objects[i]->draw(n,p);
+        
+        glPopMatrix();        
+      }      
 }
 
 

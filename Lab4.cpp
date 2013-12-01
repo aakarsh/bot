@@ -43,14 +43,12 @@ bool firstPersonMode = true;
 
 class Environment{
 public:
-
-  Light* light;
-  
+  Light* light;  
   canvas_t height;
   canvas_t texture;  
   Terrain* terrain;
+  
   vector<android*> droids;
-
   
   bool animate;
   int key_frame;
@@ -59,18 +57,19 @@ public:
   int bot_count;
   static const int MAX_KEY_FRAME = 10000000;
 
-  Environment():
+  Environment(char* height_file, char* texture_file):
     animate(false),
     key_frame(0),
     current_animation(WALKING),
     camera_angle(0),
     bot_count(1){
-    
+    terrain_setup(height_file,texture_file);    
+
   }
 
-  void env_setup(char* height_file, char* texture_file);
-  //void animate();
+  void terrain_setup(char* height_file, char* texture_file);
   void drawAndroids();
+  
 };
 
 
@@ -83,17 +82,17 @@ int pmouse_y;
 
 bool env_first = false;
 
-void Environment::env_setup(char* height_file, char* texture_file){
+void Environment::terrain_setup(char* height_file, char* texture_file){
   printf("Loading file '%s'... ", height_file);
   ppmLoadCanvas(height_file, &height);  
   printf("Done.\n");
   printf("Loading file '%s'... ", texture_file);
   ppmLoadCanvas(texture_file, &texture);          
-  env->terrain = new Terrain(windowWidth,windowHeight,texture,height);
+  terrain = new Terrain(windowWidth,windowHeight,texture,height);
 }
 
 void Environment::drawAndroids(){
-    if(droids.size() <= bot_count){
+    if( droids.size() <= bot_count ){
       for(int i  = droids.size(); i < bot_count ; i++) {       
         android* a = new android((i*6)% 16,0,i/3*8);
         droids.push_back(a);
@@ -120,7 +119,6 @@ void cb_idle() {
 
 void cb_display() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
   glLoadIdentity();
   env->terrain->drawTerrain();    
   glFlush();
@@ -302,27 +300,11 @@ int main(int argc, char** argv) {
 	glutInitWindowSize(windowWidth, windowHeight);
 	glutCreateWindow("Lab 3: Terrain Mapping");
 	glutIgnoreKeyRepeat(true);
-
 	glEnable(GL_TEXTURE_2D);
-
-        //        canvas_t texture;
-
-
         
 	if (argc == 3) {
-
-          char* height_file = argv[1];
-          char* texture_file = argv[2];
-          env = new Environment();
-          env->env_setup(height_file,texture_file);
-          
-          // printf("Loading file '%s'... ", height_file);
-          // ppmLoadCanvas(argv[1], &height);
-          // printf("Done.\n");
-          // printf("Loading file '%s'... ", texture_file);
-          // ppmLoadCanvas(argv[2], &texture);          
-          // env->terrain = new Terrain(windowWidth,windowHeight, texture, height);
-          
+          env = new Environment(argv[1] , // height file
+                                argv[2]);  // texture file          
 	} else {
           printf("Usage: %s terrain.ppm texture.ppm\n", argv[0]);
           return 1;
@@ -333,7 +315,6 @@ int main(int argc, char** argv) {
 
         // an commented
         glEnable(GL_LIGHTING);
-
         
         glutMouseFunc(cb_mouseclick);
         glutMotionFunc(cb_mousemove);
@@ -342,12 +323,10 @@ int main(int argc, char** argv) {
         glutIdleFunc(cb_idle);
         
 	glutReshapeFunc(cb_reshape);
-        glutKeyboardFunc(cb_keyboard);
-	
+        glutKeyboardFunc(cb_keyboard);	
 
 	glClearColor(0,0,1,0); // set background to black
 
 	glutMainLoop();
-
 	return 0;
 }

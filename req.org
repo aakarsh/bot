@@ -1,4 +1,3 @@
-
 Description
 
 Lab 4 consists of integrating your code from lab 2 with your code from
@@ -35,8 +34,6 @@ anywhere, instead use "((float)terrain.width)" ).
 
 Also note that you don't need to make lighting work for your animal.
 
-
-5 Provide a help message that explains the controls of your program.
 5 Animal from lab 2 is working.
 5 Height map with normals and texture from lab 3 is working.
 5 Animal is drawn along with terrain.
@@ -48,3 +45,7 @@ Also note that you don't need to make lighting work for your animal.
 5 Provide a control that causes the camera to look at your animal and allows the user to cycle through looking at each copy.
 5 The copies of the animal move independently along different paths (or using different random walks).
 5 Provide controls that can start, pause, and reset the motion of your animals.
+5 Provide a help message that explains the controls of your program.
+
+
+

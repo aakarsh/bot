@@ -10,6 +10,7 @@
 #include <GL/glut.h>
 
 #include "util.h"
+#include "geometry.h"
 #include "android.h"
 
 using namespace std;
@@ -173,8 +174,9 @@ void android::animate_walk(double key_frame){
   double pi =3.14;
   double theta = mod((duration*key_frame),(2*pi));
   double position = sin(theta);
+  // here we are updating theorem android location.
+  posx = mod(posx+.06,30);
   
-  posx = mod(posx+.06,30); // here we are updating theorem android location.
   tilt_angle = -5;
   left_arm->swing(key_frame,duration,0);
   right_arm->swing(key_frame,duration,50);
@@ -231,7 +233,6 @@ void android::drawUpperTorso(){
 }
 
 
-
 void android::drawSpinalCord(){
   glPushMatrix();
   glTranslatef(0,+3,0);
@@ -264,6 +265,7 @@ void android::drawLowerTorso(){
   glColor3f(1, 1, 1);
   glPopMatrix();
 }
+
 void drawAntenna() {
   glPushMatrix();
   glPushMatrix();

@@ -13,97 +13,13 @@
 #include <vector>
 #include <math.h>
 
+#include "android.h"
 #include "ppm_canvas.h"
 #include "util.h"
+#include "geometry.h"
 
 using namespace std;
 
-class Vec3d{
-  
-public:
-  double x;
-  double y;
-  double z;  
-
-  Vec3d(double i,double j, double k): x(i),y(j),z(k){};
-  Vec3d(double* v){
-    x=v[0];
-    y=v[1];
-    z=v[2];
-  }
-  Vec3d(const Vec3d & v){
-    x = v.x;
-    y = v.y;
-    z = v.z;
-  }
-  friend Vec3d cross(Vec3d e1 , Vec3d e2);
-  
-  double* to_array(){
-    double* v = (double*) malloc(sizeof(double)*3);
-    v[0] = x;
-    v[1] = y; 
-    v[2] = z;
-    return v;
-  }
-
-  Vec3d operator+(Vec3d o){
-    return Vec3d(x+o.x,y+o.y,z+o.z);
-  }
-  
-  void glNormal(){
-    glNormal3f(x,y,z);   
-  }
-  
-  double len(){
-    return sqrt(x*x+ y*y+ z*z);
-  }
-  void scale(double factor){
-    x *= factor;
-    y *= factor;
-    z *= factor;
-  }
-
-  void reverse(){
-    scale(-1);
-  }
-  
-  void normalize(){
-    double dist = len();
-    if (dist == 0.0f) // avoid div by 0
-      return ;    
-    x = x/dist;
-    y = y/dist;
-    z = z/dist;    
-  }  
-};
-
-class Vertex{
-public:
-  double x;
-  double y;
-  double z;
-  
-  Vertex(double i,double j, double k): x(i),y(j),z(k){};
-  Vertex(double* v): x(v[0]),y(v[1]),z(v[2]){};
-  
-  double* to_array(){
-    double* v = (double*) malloc(sizeof(double)*3);
-    v[0] = x;
-    v[1] = y; 
-    v[2] = z;
-    return v;
-  }
-  void gl(){
-    glVertex3d(x,y,z);
-  }
-  friend Vec3d normal(Vertex v1 , Vertex v2,Vertex v3);  
-};
-
-typedef vector<Vertex*> row;
-typedef vector<row> VertexMatrix;
-
-typedef vector<Vec3d*> row_vec;
-typedef vector<row_vec> VecMatrix;
 
 class Camera{
 public:
@@ -155,8 +71,7 @@ public:
     glRotatef(this->cameraAngleX, 0.1f, 0.0f, 0.0f);
     glRotatef(this->cameraAngleY, 0.0f, 0.1f, 0.0f);
     
-    glTranslatef(-(float)(width)/2.0 ,0.0f, -(float)(length)/2.0 );
-    
+    glTranslatef(-(float)(width)/2.0 ,0.0f, -(float)(length)/2.0 );    
   }
   
   Vec3d direction(){
@@ -237,6 +152,16 @@ public:
 
 enum MouseControlMode {NONE, CAMERA_PANNING, VIEW_POINT,LOOKAT_CENTER, LIGHT_MOTION,FIRST_PERSON};
 
+class Drawable{
+ public:
+  virtual ~Drawable() {}
+  
+  virtual Vertex animate(double kf) = 0;
+  virtual void draw(Vec3d normal, Vertex position) = 0;
+  
+  virtual double scale()  = 0;
+};
+
 
 class Terrain{
   
@@ -253,8 +178,11 @@ private:
   VecMatrix normals;
   VecMatrix surface_normals;
   vector<Vec3d*> textures;
+  vector<Drawable*> objects;
 
   GLuint dl_id;
+
+  int key_frame;
 
   bool textureEnabled;  
   bool surfaceNormalsEnabled;
@@ -271,17 +199,19 @@ public:
   Camera* camera; 
   int angle;
   double scale_factor;  
-  MouseControlMode mouseMode;// = NONE;
+  MouseControlMode mouseMode;
+  android*  droid;
   
  Terrain(int ww,int wh,
+         //Environment* env,
          canvas_t& textureMap,
          canvas_t& heightMap):
-
         
+        key_frame(0),
         windowWidth(ww),
         windowHeight(wh),
         length(heightMap.height),
-        width(heightMap.width),
+        width(heightMap.width),        
         angle(0),
         texture(textureMap.pixels),
         heights(heightMap.pixels),
@@ -295,14 +225,17 @@ public:
  {
     
     load_texture(textureMap);
-    cout<<"Terrain of length "<<length<<" width "<<width<<endl;
     light = new Light(GL_LIGHT0);
     camera = new Camera();
     dl_id = glGenLists(1);
     compile_display_list();
+    droid = new android(0,0,0);
   }
   
   void drawTerrain();
+  void add_stuff(Drawable* d){
+    this->objects.push_back(d);
+  }
 
   void compile_display_list();
   void specifyGeometry() ;
