@@ -182,7 +182,7 @@ Vertex android::animate_walk(double key_frame){
   posy = posy + step_size * walk_direction.y;
   posz = posz + step_size * walk_direction.z;
 
-  
+  facing_direction = angle(walk_direction,Vec3d(1.0,0.,0.));
   
   tilt_angle = -5;
   left_arm->swing(key_frame,duration,0);
@@ -215,8 +215,9 @@ void android::draw(){
   glPushMatrix();  
   glTranslatef(posx,posy,posz);
 
-  glRotatef(angle(walk_direction,Vec3d(1.0,0.,0.)),
-            0,1,0);
+  
+  glRotatef(-facing_direction,0,1,0);
+  
   glRotatef(tilt_angle,0,0,1);
   glTranslatef(0,height,0);
 

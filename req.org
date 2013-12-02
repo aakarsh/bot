@@ -37,8 +37,16 @@ Also note that you don't need to make lighting work for your animal.
 5 Animal from lab 2 is working.
 5 Height map with normals and texture from lab 3 is working.
 5 Animal is drawn along with terrain.
-5 Animal is at an appropriate scale (the size of 1-3 grid cells of the terrain).
-10 Animal is at the correct height to stand on the terrain. This does not need to be perfect, but the body of the animal should be just above the terrain, while the legs (or other apendeges) should be touching the terrain. Moslty submerged or obviously floating positions will not get full credit.
+
+5 Animal is at an appropriate scale
+  (the size of 1-3 grid cells of the terrain).
+  
+10 Animal is at the correct height to stand on the terrain.
+   This does not need to be perfect, but the body of the animal
+   should be just above the terrain, while the legs (or other apendeges)
+   should be touching the terrain. Moslty submerged
+   or obviously floating positions will not get full credit.
+   
 5 The animal is rotated according to the normal of the terrain wherever it is placed.
 10 The animal moves across the terrain while animating, either randomly or on a fixed path.
 5 Multiple (at least 3) copies of the animal are displayed.

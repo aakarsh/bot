@@ -21,12 +21,16 @@ double dot(Vec3d e1 , Vec3d e2){
          +e1.z*e2.z;
 }
 
+double to_degrees(double radians) {
+  return (180.0/3.14)*radians;
+}
+
 double angle(Vec3d e1 , Vec3d e2) {
   double dt  = dot(e1,e2);
   double mag  = e1.len()* e2.len();
   if(mag  == 0 )
     mag = 1;  
-  return acos(dt/mag);
+  return to_degrees(acos(dt/mag));
 }
 
 Vec3d cross(Vec3d e1 , Vec3d e2){

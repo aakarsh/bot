@@ -53,6 +53,7 @@ public:
   int height;
 
   Vertex* pos;
+  double facing_direction;
   Vec3d walk_direction;
   double step_size;
   Vec3d up;
