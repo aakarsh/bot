@@ -210,6 +210,7 @@ void android::draw(Vertex pos , Vec3d* up){
   this->up.y = up->y;
   this->up.z = up->z;
   this->up.normalize();
+  
   Vec3d y_axis(0,1,0);
   Vec3d rotation_axis = cross(this->up,y_axis);
   double rot_angle  = angle(this->up,y_axis);
@@ -250,7 +251,7 @@ void android::draw(){
 void android::drawUpperTorso(){
   glPushMatrix();
   glScalef(1,1,2);
-  glColor3f(0,.3,1);
+  glColor3f(0,.3,1); 
   glutSolidCube(1.0);
   glPopMatrix();  
 

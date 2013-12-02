@@ -307,7 +307,7 @@ int main(int argc, char** argv) {
 
 	glutInit(&argc, argv);
 
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH | GLUT_RGB);
 	glutInitWindowSize(windowWidth, windowHeight);
 	glutCreateWindow("Lab 3: Terrain Mapping");
 	glutIgnoreKeyRepeat(true);
@@ -324,8 +324,13 @@ int main(int argc, char** argv) {
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glEnable (GL_DEPTH_TEST);
 
+
+      //      glEnable(GL_TEXTURE_2D);
+
         // an commented
         glEnable(GL_LIGHTING);
+        
+        glEnable(GL_COLOR_MATERIAL);
         
         glutMouseFunc(cb_mouseclick);
         glutMotionFunc(cb_mousemove);

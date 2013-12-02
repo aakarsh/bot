@@ -32,6 +32,7 @@ VertexMatrix* Terrain::vertexGrid() {
   }  
   for(int z = 0; z < this->length; z+=1) {
     vector<Vertex*> triangle_strip;
+    // questionable try x+
     for(int x = 0; x < this->width; x+=1) {      
       Vertex* v1 = new Vertex(x,this->getHeight(x,z),z);
       Vertex* v2 = new Vertex(x,this->getHeight(x,z+1),z+1);      
@@ -116,14 +117,22 @@ void Terrain::specifyGeometry() {
   if(surfaceNormalsEnabled)
     normals =*(this->surfaceNormals());  
 
-  for(int z = 0; z < this->length; z+=1) {
+  // i was z 
+  for(int i = 0; i < this->length; i+=1) {
     glBegin(GL_TRIANGLE_STRIP);                
+    // 
     for(int x = 0; x+3 < this->width ; x+=1) {
       
-      Vertex* v1 = grid[z][x];                  
-      Vertex* v2 = grid[z][x+1];
-      Vertex* v3 = grid[z][x+2];                  
-      Vec3d* normal = normals[z][x];
+      if(x > this->width/2){
+        glColor3ub(255,0,0);
+      } else {
+        glColor3ub(255,255,255);
+      }
+
+      Vertex* v1 = grid[i][x];                  
+      Vertex* v2 = grid[i][x+1];
+      Vertex* v3 = grid[i][x+2];                  
+      Vec3d* normal = normals[i][x];
 
       if(textureEnabled)
         glTexCoord2f(v1->x/this->width,v1->z/this->length);
@@ -151,11 +160,12 @@ void Terrain::drawTerrain() {
       glLoadIdentity();
       
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
+      // whe
+      //      glColor3ub(255,255,255);
+      
       glMatrixMode(GL_MODELVIEW);
-      glEnable(GL_DEPTH_TEST);
-      glEnable(GL_DEPTH);
-
-      glEnable(GL_TEXTURE_2D);
+      //      glEnable(GL_DEPTH_TEST);
+      //      glEnable(GL_TEXTURE_2D);
       glBindTexture(GL_TEXTURE_2D, textureId);
         
       glLoadIdentity();
@@ -177,13 +187,17 @@ void Terrain::drawTerrain() {
          specifyGeometry();
        }      
       
-      light->enable();
-      glDisable(GL_TEXTURE_2D);        
+       //
+      light->enable(); // ?? questionable 
+
+
+      glBindTexture(GL_TEXTURE_2D, 0);
+      
       glutSwapBuffers();  
 
       for(int i  = 0 ; i <  droids.size() ; i++)  {        
         glPushMatrix();
-        glScalef(.2,.2,.2);
+        //        glScalef(.2,.2,.2);
         android* droid = droids[i];        
         droid->mode = WALKING;  
         Vertex pos = droid->animate(key_frame++);
@@ -196,7 +210,7 @@ void Terrain::drawTerrain() {
           droid->draw(pos,up);                  
         } else{
           // draw as stationary object
-          droid->draw();
+          //          droid->draw();
         }
 
         glPopMatrix();        
