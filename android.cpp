@@ -175,7 +175,7 @@ void android::animate_walk(double key_frame){
   double theta = mod((duration*key_frame),(2*pi));
   double position = sin(theta);
   // here we are updating theorem android location.
-  posx = mod(posx+.06,30);
+  posx = mod(posx+.06,300); 
   
   tilt_angle = -5;
   left_arm->swing(key_frame,duration,0);

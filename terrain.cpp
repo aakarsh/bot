@@ -181,28 +181,14 @@ void Terrain::drawTerrain() {
       glDisable(GL_TEXTURE_2D);        
       glutSwapBuffers();  
 
-      glPushMatrix();
-      glScalef(.2,.2,.2);
-      droid->mode = WALKING;  
-      droid->animate(key_frame++);
-      droid->draw();
-      glPopMatrix();
-
-      for(int i  = 0 ; i <  objects.size() ; i++)  {        
-        glPushMatrix();        
-        glScalef(objects[i]->scale(),
-                 objects[i]->scale(),
-                 objects[i]->scale());
+      for(int i  = 0 ; i <  droids.size() ; i++)  {        
+        glPushMatrix();
+        glScalef(.2,.2,.2);
+        android* droid = droids[i];
         
-        /*
-           - normal 
-           - height
-           - x,z -> 
-         */
-        Vertex p(0,0,0);
-        Vec3d n(0,1,0);
-        objects[i]->draw(n,p);
-        
+        droid->mode = WALKING;  
+        droid->animate(key_frame++);
+        droid->draw();        
         glPopMatrix();        
       }      
 }

@@ -89,6 +89,9 @@ void Environment::terrain_setup(char* height_file, char* texture_file){
   printf("Loading file '%s'... ", texture_file);
   ppmLoadCanvas(texture_file, &texture);          
   terrain = new Terrain(windowWidth,windowHeight,texture,height);
+  terrain->add_stuff(new android(0,0,0));
+  terrain->add_stuff(new android(10,0,0));
+  terrain->add_stuff(new android(20,0,0));
 }
 
 void Environment::drawAndroids(){

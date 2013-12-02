@@ -178,8 +178,7 @@ private:
   VecMatrix normals;
   VecMatrix surface_normals;
   vector<Vec3d*> textures;
-  vector<Drawable*> objects;
-
+  
   GLuint dl_id;
 
   int key_frame;
@@ -200,7 +199,7 @@ public:
   int angle;
   double scale_factor;  
   MouseControlMode mouseMode;
-  android*  droid;
+  vector<android*>  droids;
   
  Terrain(int ww,int wh,
          //Environment* env,
@@ -229,12 +228,12 @@ public:
     camera = new Camera();
     dl_id = glGenLists(1);
     compile_display_list();
-    droid = new android(0,0,0);
   }
   
   void drawTerrain();
-  void add_stuff(Drawable* d){
-    this->objects.push_back(d);
+  
+  void add_stuff(android* d){
+    this->droids.push_back(d);
   }
 
   void compile_display_list();
