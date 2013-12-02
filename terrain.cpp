@@ -183,7 +183,7 @@ void Terrain::drawTerrain() {
 
       for(int i  = 0 ; i <  droids.size() ; i++)  {        
         glPushMatrix();
-        //        glScalef(1,.2,.2);
+        glScalef(.2,.2,.2);
         android* droid = droids[i];        
         droid->mode = WALKING;  
         Vertex pos = droid->animate(key_frame++);
