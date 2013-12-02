@@ -18,7 +18,7 @@ public:
   double x;
   double y;
   double z;  
-
+  Vec3d(): x(0),y(0),z(0){};
   Vec3d(double i,double j, double k): x(i),y(j),z(k){};
   Vec3d(double* v){
     x=v[0];
@@ -77,6 +77,7 @@ public:
   double y;
   double z;
   
+   Vertex() : x(0),y(0),z(0){};
   Vertex(double i,double j, double k): x(i),y(j),z(k){};
   Vertex(double* v): x(v[0]),y(v[1]),z(v[2]){};
   

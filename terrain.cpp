@@ -120,7 +120,7 @@ void Terrain::specifyGeometry() {
     glBegin(GL_TRIANGLE_STRIP);                
     for(int x = 0; x+3 < this->width ; x+=1) {
       
-      Vertex* v1 =grid[z][x];                  
+      Vertex* v1 = grid[z][x];                  
       Vertex* v2 = grid[z][x+1];
       Vertex* v3 = grid[z][x+2];                  
       Vec3d* normal = normals[z][x];
@@ -184,10 +184,17 @@ void Terrain::drawTerrain() {
       for(int i  = 0 ; i <  droids.size() ; i++)  {        
         glPushMatrix();
         glScalef(.2,.2,.2);
-        android* droid = droids[i];
-        
+        android* droid = droids[i];        
         droid->mode = WALKING;  
-        droid->animate(key_frame++);
+        Vertex pos = droid->animate(key_frame++);
+        
+        if(pos.x+3 < this->length and  pos.z  < this->width) { 
+          // height
+          pos.y =  grid[pos.x][pos.z]->y;          // up
+          Vec3d* up = normals[pos.x][pos.z];
+          
+        }
+
         droid->draw();        
         glPopMatrix();        
       }      

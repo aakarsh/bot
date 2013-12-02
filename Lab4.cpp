@@ -62,9 +62,8 @@ public:
     key_frame(0),
     current_animation(WALKING),
     camera_angle(0),
-    bot_count(1){
+    bot_count(3){
     terrain_setup(height_file,texture_file);    
-
   }
 
   void terrain_setup(char* height_file, char* texture_file);
@@ -89,9 +88,14 @@ void Environment::terrain_setup(char* height_file, char* texture_file){
   printf("Loading file '%s'... ", texture_file);
   ppmLoadCanvas(texture_file, &texture);          
   terrain = new Terrain(windowWidth,windowHeight,texture,height);
-  terrain->add_stuff(new android(0,0,0));
-  terrain->add_stuff(new android(10,0,0));
-  terrain->add_stuff(new android(20,0,0));
+  for(int j = 0 ; j < bot_count ; j++) {
+    droids.push_back(new android(bot_count%10 +j*10 ,0,0));
+    
+  }
+  
+  for(int i = 0 ; i < droids.size(); i ++){
+    terrain->add_stuff(droids[i]);
+  }  
 }
 
 void Environment::drawAndroids(){

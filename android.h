@@ -52,7 +52,10 @@ public:
   int last_keyframe;
   int height;
 
-  
+  Vertex* pos;
+  Vec3d walk_direction;
+  Vec3d up;
+
   android(int x,int y,int z) :
     posx(x),
     posy(y),
@@ -70,10 +73,14 @@ public:
     double position = sin((2*3.14/period)*(key_frame+offset));
     return position;
   }    
-  void animate(double key_frame);    
-  void animate_walk(double key_frame);
-  void animate_jump(double key_frame) ;
+  Vertex animate(double key_frame);    
+  Vertex animate_walk(double key_frame);
+  Vertex animate_jump(double key_frame) ;
+
+
   void draw();
+  void draw(Vertex pos , Vec3d* up);
+
   void drawHead();
   void drawLowerTorso();
   void drawUpperTorso();

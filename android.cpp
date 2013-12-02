@@ -154,24 +154,24 @@ void leg::draw(){
    glPopMatrix();//1
 }
 
-void android::animate(double key_frame){    
+Vertex android::animate(double key_frame){    
   if(key_frame == last_keyframe && key_frame!=0){
-    return;
+    return Vertex(0,0,0);
   }
   switch(mode){
   case WALKING:
-    animate_walk(key_frame);
+    return animate_walk(key_frame);
   case JUMP:
-    animate_jump(key_frame);
+    return animate_jump(key_frame);
   }
 }
     
-void android::animate_walk(double key_frame){
+Vertex android::animate_walk(double key_frame){
   if(key_frame == last_keyframe){
-    return;
+    return Vertex(0,0,0);
   }
   double duration = 100.0;
-  double pi =3.14;
+  double pi = 3.14;
   double theta = mod((duration*key_frame),(2*pi));
   double position = sin(theta);
   // here we are updating theorem android location.
@@ -184,11 +184,24 @@ void android::animate_walk(double key_frame){
   left_leg->walk(key_frame,duration,0);
   right_leg->walk(key_frame,duration,50);
   last_keyframe = key_frame;
-
+  
+  return Vertex(posx,posy,posz);
 }
     
-void android::animate_jump(double key_frame) {
+Vertex android::animate_jump(double key_frame) {
 
+}
+void android::draw(Vertex pos , Vec3d* up){
+  glPushMatrix();
+  this->posx = pos.x;
+  this->posy = pos.y;
+  this->posz = pos.z;
+  
+  this->up.x = up->x;
+  this->up.y = up->y;
+  this->up.z = up->z;  
+  draw();  
+  glPopMatrix();
 }
 
 void android::draw(){  
@@ -218,7 +231,7 @@ void android::drawUpperTorso(){
   glPushMatrix();
   glScalef(1,1,2);
   glColor3f(0,.3,1);
-  glutSolidCube (1.0);
+  glutSolidCube(1.0);
   glPopMatrix();  
 
   glPushMatrix();
