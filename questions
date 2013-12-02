@@ -1,5 +1,12 @@
-1. Lighting animal 
-2. Depth issues 
+1. Lighting animal
+   
+   
+2. Depth issues
+
 3. Normal interpolation
+   
 4. Constraining animal.
+
 5. Camera following the animal.
+
+   Use gluLookAt to be able to set up how it goes.

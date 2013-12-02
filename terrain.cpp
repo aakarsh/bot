@@ -18,6 +18,43 @@
 using namespace std;
 
 
+void Camera::setup_perspective(int w,int h ){
+    int aspect = w/h;
+    glViewport(0, 0, w, h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(fov, aspect,zNear, zFar); 
+    glMatrixMode(GL_MODELVIEW);
+}
+
+void Camera::setup_lookat(VecMatrix & normals,double width,double length){
+    Vertex eye(this->eyeLocation);
+    Vertex lookat(this->eyeCenter);        
+    Vec3d up(0.0,1.0,0.0);
+        
+    gluLookAt(eye.x,eye.y,eye.z,
+              lookat.x,lookat.y,lookat.z,
+              up.x,up.y,up.z); //up        
+
+
+    glRotatef(this->cameraAngleX, 0.1f, 0.0f, 0.0f);
+    glRotatef(this->cameraAngleY, 0.0f, 0.1f, 0.0f);    
+    glTranslatef(-(float)(width)/2.0 ,0.0f, -(float)(length)/2.0 );    
+  }
+
+
+void Light::enable(){  
+  GLfloat ambientColor[] = {1.0f, 1.0f, 1.0f, 0.0f};
+  // Ambient white light 
+  glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);	
+  // Diffuse white light
+  GLfloat lightColor0[] = {1.0f, 1.0f, 1.0f, 1.0f};
+  //    GLfloat lightPos0[] = {-0.5f, 0.5f, 0.1f, 0.0f};
+  glLightfv(light_id, GL_DIFFUSE, lightColor0);        
+  glLightfv(light_id, GL_POSITION, light_position);
+  glEnable(light_id);
+}
+
 double Terrain::getHeight(int x,int z) {
   pixel_t px =this->heights[(x)+ this->width*(z)];
   int r = RED(px);
@@ -119,7 +156,7 @@ void Terrain::specifyGeometry() {
 
   // i was z 
   for(int i = 0; i < this->length; i+=1) {
-    glBegin(GL_TRIANGLE_STRIP);                
+    glBegin(GL_TRIANGLES);                
     // 
     for(int x = 0; x+3 < this->width ; x+=1) {
       
@@ -158,14 +195,8 @@ void Terrain::specifyGeometry() {
 void Terrain::drawTerrain() {  
       this->camera->setup_perspective(windowWidth,windowHeight);
       glLoadIdentity();
-      
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
-      // whe
-      //      glColor3ub(255,255,255);
-      
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       glMatrixMode(GL_MODELVIEW);
-      //      glEnable(GL_DEPTH_TEST);
-      //      glEnable(GL_TEXTURE_2D);
       glBindTexture(GL_TEXTURE_2D, textureId);
         
       glLoadIdentity();
@@ -188,8 +219,8 @@ void Terrain::drawTerrain() {
        }      
       
        //
-      light->enable(); // ?? questionable 
 
+       //      light->enable(); // ?? questionable 
 
       glBindTexture(GL_TEXTURE_2D, 0);
       
@@ -197,7 +228,7 @@ void Terrain::drawTerrain() {
 
       for(int i  = 0 ; i <  droids.size() ; i++)  {        
         glPushMatrix();
-        //        glScalef(.2,.2,.2);
+        glScalef(.5,.5,.5);
         android* droid = droids[i];        
         droid->mode = WALKING;  
         Vertex pos = droid->animate(key_frame++);
@@ -212,7 +243,6 @@ void Terrain::drawTerrain() {
           // draw as stationary object
           //          droid->draw();
         }
-
         glPopMatrix();        
       }      
 }

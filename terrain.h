@@ -49,30 +49,11 @@ public:
     eyeCenter[2] = 0;
   }
 
-  void setup_perspective(int w,int h ){
-    int aspect = w/h;
-    glViewport(0, 0, w, h);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(fov, aspect,zNear, zFar); 
-    glMatrixMode(GL_MODELVIEW);
-  }
-
-  void setup_lookat(VecMatrix & normals,double width,double length){
-    Vertex eye(this->eyeLocation);
-    Vertex lookat(this->eyeCenter);        
-    Vec3d up(0.0,1.0,0.0);
-        
-    gluLookAt(eye.x,eye.y,eye.z,
-              lookat.x,lookat.y,lookat.z,
-              up.x,up.y,up.z); //up        
+  void setup_perspective(int w,int h );
 
 
-    glRotatef(this->cameraAngleX, 0.1f, 0.0f, 0.0f);
-    glRotatef(this->cameraAngleY, 0.0f, 0.1f, 0.0f);
-    
-    glTranslatef(-(float)(width)/2.0 ,0.0f, -(float)(length)/2.0 );    
-  }
+  void setup_lookat(VecMatrix & normals,double width,double length);
+
   
   Vec3d direction(){
     Vec3d result(eyeCenter[0] - eyeLocation[0],
@@ -89,11 +70,13 @@ public:
     eyeLocation[1]+=dir.y;
     eyeLocation[2]+=dir.z;    
   }
+
   void backward(int steps){
     forward(-1*steps);
   }
   
 };
+
 
 class Light{
 public:
@@ -121,17 +104,7 @@ public:
     this->light_position[3] = 1.0 ;
   }
   
-  void enable(){  
-    GLfloat ambientColor[] = {1.0f, 1.0f, 1.0f, 0.0f};
-    // Ambient white light 
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);	
-    // Diffuse white light
-    GLfloat lightColor0[] = {1.0f, 1.0f, 1.0f, 1.0f};
-    //    GLfloat lightPos0[] = {-0.5f, 0.5f, 0.1f, 0.0f};
-    glLightfv(light_id, GL_DIFFUSE, lightColor0);        
-    glLightfv(light_id, GL_POSITION, light_position);
-    glEnable(light_id);
-  }
+  void enable();
   
   void disable(){
     glDisable(light_id);
@@ -148,19 +121,10 @@ public:
     light_position[1]  = pos[1];
     light_position[2]  = pos[2];
   }
+  
 };  
 
 enum MouseControlMode {NONE, CAMERA_PANNING, VIEW_POINT,LOOKAT_CENTER, LIGHT_MOTION,FIRST_PERSON};
-
-class Drawable{
- public:
-  virtual ~Drawable() {}
-  
-  virtual Vertex animate(double kf) = 0;
-  virtual void draw(Vec3d normal, Vertex position) = 0;
-  
-  virtual double scale()  = 0;
-};
 
 
 class Terrain{
@@ -202,7 +166,6 @@ public:
   vector<android*>  droids;
   
  Terrain(int ww,int wh,
-         //Environment* env,
          canvas_t& textureMap,
          canvas_t& heightMap):
         
@@ -228,6 +191,8 @@ public:
     camera = new Camera();
     dl_id = glGenLists(1);
     compile_display_list();
+    // Moving the light
+    light->enable(); // ?? questionable 
   }
   
   void drawTerrain();
