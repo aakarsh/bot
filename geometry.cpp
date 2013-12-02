@@ -15,6 +15,20 @@
 
 using namespace std;
 
+double dot(Vec3d e1 , Vec3d e2){
+  return e1.x*e2.x
+         +e1.y*e2.y
+         +e1.z*e2.z;
+}
+
+double angle(Vec3d e1 , Vec3d e2) {
+  double dt  = dot(e1,e2);
+  double mag  = e1.len()* e2.len();
+  if(mag  == 0 )
+    mag = 1;  
+  return acos(dt/mag);
+}
+
 Vec3d cross(Vec3d e1 , Vec3d e2){
   return Vec3d(e1.y*e2.z - e1.z*e2.y,
                e1.z*e2.x - e1.x*e2.z,

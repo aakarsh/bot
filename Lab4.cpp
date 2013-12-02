@@ -89,7 +89,11 @@ void Environment::terrain_setup(char* height_file, char* texture_file){
   ppmLoadCanvas(texture_file, &texture);          
   terrain = new Terrain(windowWidth,windowHeight,texture,height);
   for(int j = 0 ; j < bot_count ; j++) {
-    droids.push_back(new android(bot_count%10 +j*10 ,0,0));
+    android* droid = new android(bot_count%10 +j*10 ,0,0);
+    droid->walk_direction.x = rand();
+    droid->walk_direction.z = rand();
+    droid->walk_direction.normalize();
+    droids.push_back(droid);
     
   }
   

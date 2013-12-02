@@ -30,7 +30,10 @@ public:
     y = v.y;
     z = v.z;
   }
+  
   friend Vec3d cross(Vec3d e1 , Vec3d e2);
+  friend double dot(Vec3d e1 , Vec3d e2);
+  friend double angle(Vec3d e1 , Vec3d e2);
   
   double* to_array(){
     double* v = (double*) malloc(sizeof(double)*3);
@@ -69,6 +72,7 @@ public:
     y = y/dist;
     z = z/dist;    
   }  
+
 };
 
 class Vertex{

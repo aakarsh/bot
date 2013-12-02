@@ -190,12 +190,15 @@ void Terrain::drawTerrain() {
         
         if(pos.x+3 < this->length and  pos.z  < this->width) { 
           // height
-          pos.y =  grid[pos.x][pos.z]->y;          // up
+          pos.y =  grid[pos.x][pos.z]->y;          
+          // up
           Vec3d* up = normals[pos.x][pos.z];
-          
+          droid->draw(pos,up);                  
+        } else{
+          // draw as stationary object
+          droid->draw();
         }
 
-        droid->draw();        
         glPopMatrix();        
       }      
 }

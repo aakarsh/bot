@@ -54,12 +54,16 @@ public:
 
   Vertex* pos;
   Vec3d walk_direction;
+  double step_size;
   Vec3d up;
 
   android(int x,int y,int z) :
     posx(x),
     posy(y),
     posz(z),
+    step_size(.06),
+    walk_direction(1,0,0),
+    up(0,1,0),
     tilt_angle(0),
     height(3),
     last_keyframe(0),
