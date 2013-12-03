@@ -67,14 +67,17 @@ VertexMatrix* Terrain::vertexGrid() {
   if(grid.size() > 0){
     return &grid;
   }  
-  for(int z = 0; z < this->length; z+=1) {
+  for(int z = 0; z < this->length; z+= 1) {
     vector<Vertex*> triangle_strip;
     // questionable try x+
     for(int x = 0; x < this->width; x+=1) {      
+      
       Vertex* v1 = new Vertex(x,this->getHeight(x,z),z);
       Vertex* v2 = new Vertex(x,this->getHeight(x,z+1),z+1);      
       triangle_strip.push_back(v1);
       triangle_strip.push_back(v2);
+      cout<<"v1: "<<"["<<v1->to_s()<<"]"<<endl;
+      cout<<"v2: "<<v2->to_s()<<"]"<<endl;
     }
     grid.push_back(triangle_strip);
   }
@@ -154,8 +157,10 @@ void Terrain::specifyGeometry() {
   if(surfaceNormalsEnabled)
     normals =*(this->surfaceNormals());  
 
+   cout<<"length "<<this->length<<" width "<<this->width<<endl;
+  
   // i was z 
-  for(int i = 0; i < this->length; i+=1) {
+  for(int i = 0; i < this->length; i+= 1) {
     glBegin(GL_TRIANGLES);                
     // 
     for(int x = 0; x+3 < this->width ; x+=1) {
@@ -168,7 +173,10 @@ void Terrain::specifyGeometry() {
 
       Vertex* v1 = grid[i][x];                  
       Vertex* v2 = grid[i][x+1];
-      Vertex* v3 = grid[i][x+2];                  
+      Vertex* v3 = grid[i][x+2];    
+
+      cout<<"t: "<<"["<<v1->to_s()<<v2->to_s()<<v3->to_s()<<"]"<<endl;
+      
       Vec3d* normal = normals[i][x];
 
       if(textureEnabled)
@@ -184,11 +192,11 @@ void Terrain::specifyGeometry() {
       if(textureEnabled)
         glTexCoord2f(v3->x/this->width,v3->z/this->length);                  
       normal->glNormal();
-      v3->gl();
-      
+      v3->gl();      
     }
     glEnd();
   }          
+  exit(0);
 }
 
 

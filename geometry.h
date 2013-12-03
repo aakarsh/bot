@@ -9,6 +9,8 @@
 #include <iostream>
 #include <vector>
 #include <math.h>
+#include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -81,7 +83,7 @@ public:
   double y;
   double z;
   
-   Vertex() : x(0),y(0),z(0){};
+  Vertex() : x(0),y(0),z(0){};
   Vertex(double i,double j, double k): x(i),y(j),z(k){};
   Vertex(double* v): x(v[0]),y(v[1]),z(v[2]){};
   
@@ -95,6 +97,13 @@ public:
   void gl(){
     glVertex3d(x,y,z);
   }
+
+  std::string to_s(){
+    std::ostringstream oss;
+    oss << "["<<x<<","<<y<<","<<z<<"]";
+    return oss.str();
+  }
+  
   friend Vec3d normal(Vertex v1 , Vertex v2,Vertex v3);  
 };
 
