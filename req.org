@@ -37,7 +37,6 @@ Also note that you don't need to make lighting work for your animal.
 5 Animal from lab 2 is working.
 5 Height map with normals and texture from lab 3 is working.
 5 Animal is drawn along with terrain.
-
 5 Animal is at an appropriate scale
   (the size of 1-3 grid cells of the terrain).
   

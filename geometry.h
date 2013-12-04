@@ -49,6 +49,10 @@ public:
     return Vec3d(x+o.x,y+o.y,z+o.z);
   }
   
+  Vec3d operator+=(Vec3d o){
+    return Vec3d(x+o.x,y+o.y,z+o.z);
+  }
+  
   void glNormal(){
     glNormal3f(x,y,z);   
   }

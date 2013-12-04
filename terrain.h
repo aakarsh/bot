@@ -148,6 +148,14 @@ public:
     normal[2] = v3;
     normal[3] = v4;
   }  
+
+  Vec3d average() { 
+    Vec3d sum;
+    for(int i =0 ; i < 3 ;  i++){
+      sum += normal[i];
+    }    
+    return sum;
+  }
 };
 
 
@@ -173,7 +181,7 @@ private:
   Grid grid;
 
   NormalGrid normals;
-  VecMatrix surface_normals;
+  NormalGrid surface_normals;
   vector<Vec3d*> textures;
   
   GLuint dl_id;
@@ -190,7 +198,7 @@ private:
   Grid* vertexGrid() ;
 
   NormalGrid* vertexNormals();
-  VecMatrix* surfaceNormals();
+  NormalGrid* surfaceNormals();
 
 public:
   Light* light;

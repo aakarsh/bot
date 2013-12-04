@@ -62,7 +62,7 @@ public:
     key_frame(0),
     current_animation(WALKING),
     camera_angle(0),
-    bot_count(2){
+    bot_count(20){
     terrain_setup(height_file,texture_file);    
   }
 

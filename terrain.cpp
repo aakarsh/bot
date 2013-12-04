@@ -135,28 +135,9 @@ NormalGrid* Terrain::vertexNormals(){
                           (gc->v[2]),
                           (gc->v[3]));
 
-      NormalCell* nc = new NormalCell(n1,
-                                      n1,
-                                      n2,
-                                      n2);
+      NormalCell* nc = new NormalCell(n1,n1,n2,n2);
+      row.push_back(nc);      
 
-
-
-
-
-      row.push_back(nc);
-      
-      //      Vec3d nrm = normal(*v[0],*v[1],*v[2]);
-
-      
-      
-      // if(reverse_winding){
-      //   nrm.reverse();
-      //   reverse_winding = false;
-      // }else{
-      //   reverse_winding = true;
-      // }
-      // normal_cell.push_back(new Vec3d(nrm));
     }
     normals.push_back(row);
   }  
@@ -164,30 +145,54 @@ NormalGrid* Terrain::vertexNormals(){
 }
 
 
-VecMatrix* Terrain::surfaceNormals(){  
+NormalGrid* Terrain::surfaceNormals() {
+  
   if(grid.size() > 0 && surface_normals.size() > 0 ){
     return &surface_normals;
   }
+
+    
+  for (int z = 0; z+1 < this->length ; z+=1){
+    //    cout<<"z = "<<z<<endl;
+    vector<NormalCell*> surface_normal_row;        
+    for(int x = 0; x+1 < this->width; x+=1) {    
+      //    cout<<"x = "<<x<<endl;
+      Vec3d sum ;
+      
+      for(int i = 0 ; i < 2 ; i++){
+        for(int j = 0 ; j < 2 ; j++) {
+          if(z-i > 0  && x-j > 0)
+            sum+=normals[z-i][x-j]->average();;
+        }
+      } 
+      NormalCell* cur = new NormalCell(sum,sum,sum,sum);      
+      surface_normal_row.push_back(cur);      
+    }
+    surface_normals.push_back(surface_normal_row);
+  }
+
   /*
   for(int z =0 ; z < this->length ; z+=1){
-    vector<Vec3d*> surface_normal_row;
+    vector<NormalCell*> surface_normal_row;    
     for(int x = 0; x+3 < this->width; x+=1) {
       Vec3d sum(0,0,0);
+      
       for(int i=-1; i<2 ; i+=1){
         for(int j=-1;j<2; j+=1){
-          if(z+i>0 && z+i<this->length-1 && x+j>0 && (x+j)<this->length-4){
-               sum=sum+*(normals[z+i][x+j]);
+          if(z+i>0 && z+i< this->length-1 && x+j>0 && (x+j)<this->length-4){
+            sum = sum + normals[z+i][x+j]->normal[0]; // TODO 
           }
         }
       }      
       double len = sum.len();
       if(len == 0)
-        len = 1;
+        len = 1;        
       surface_normal_row.push_back(new Vec3d(sum.x/len,sum.y/len,sum.z/len));      
-    }  
+    }   
     surface_normals.push_back(surface_normal_row);
   }
   */
+
   return &surface_normals;
 }
 
@@ -207,15 +212,15 @@ void Terrain::specifyGeometry() {
   Grid grid = *(this->vertexGrid());
   NormalGrid normals =*(this->vertexNormals());
         
-  /*
+  
   if(surfaceNormalsEnabled)
     normals =*(this->surfaceNormals());  
-  */
+  
    cout<<"length "<<this->length<<" width "<<this->width<<endl;
   
   // i was z 
   for(int i = 0; i+1 < this->length; i+= 1) {
-
+    glBegin(GL_TRIANGLES);                
     for(int x = 0; x+1 < this->width ; x+=1) {     
       GridCell* gc = grid[i][x];
       
@@ -232,7 +237,7 @@ void Terrain::specifyGeometry() {
       Vec3d n3 = nc->normal[2];                  
       Vec3d n4 = nc->normal[3];                  
 
-      glBegin(GL_TRIANGLES);                
+
       if(textureEnabled)
         glTexCoord2f(v1.x/this->width,v1.z/this->length);
       n1.glNormal();
@@ -247,12 +252,12 @@ void Terrain::specifyGeometry() {
         glTexCoord2f(v3.x/this->width,v3.z/this->length);                  
       n3.glNormal();
       v3.gl();
-      glEnd();
+  
 
 
 
 
-      glBegin(GL_TRIANGLES);                
+  
       if(textureEnabled)
         glTexCoord2f(v1.x/this->width,v1.z/this->length);
       n1.glNormal();
@@ -267,10 +272,10 @@ void Terrain::specifyGeometry() {
         glTexCoord2f(v4.x/this->width,v4.z/this->length);                  
       n4.glNormal();
       v4.gl();
-      glEnd();
+
       
     }
-
+      glEnd();
   }          
   //  exit(0);
 }
@@ -290,29 +295,23 @@ void Terrain::drawTerrain() {
       Grid grid = *(this->vertexGrid());
       NormalGrid normals = *(this->vertexNormals());
         
-      // if(surfaceNormalsEnabled)
-      //   normals =*(this->surfaceNormals());
+      if(surfaceNormalsEnabled)
+        normals =*(this->surfaceNormals());
 
       camera->setup_lookat(this->width,this->length);
 
       float scale = 1*this->scale_factor;
       glScalef(scale, scale, scale);        
         
-       if(displayListEnabled){
-         glCallList(dl_id);         
-       } else{
+       // if(displayListEnabled){
+       //   glCallList(dl_id);         
+       // } else{
          specifyGeometry();
-       }      
-      
-       //
-
-       //      light->enable(); // ?? questionable 
-
-      glBindTexture(GL_TEXTURE_2D, 0);
-      
+         //       }
+       
+      glBindTexture(GL_TEXTURE_2D, 0);      
       glutSwapBuffers();  
 
-      /*
       for(int i  = 0 ; i <  droids.size() ; i++)  {        
         glPushMatrix();
         glScalef(.5,.5,.5);
@@ -322,17 +321,17 @@ void Terrain::drawTerrain() {
         
         if(pos.x+3 < this->length and  pos.z  < this->width) { 
           // height
-          pos.y =  grid[pos.x][pos.z]->y;          
+          pos.y =  grid[pos.x][pos.z]->v[0].y;
           // up
-          Vec3d* up = normals[pos.x][pos.z];
-          droid->draw(pos,up);                  
+          Vec3d up = normals[pos.x][pos.z]->normal[0];
+          droid->draw(pos,&up);                  
         } else{
           // draw as stationary object
-          //          droid->draw();
+          droid->draw();
         }
         glPopMatrix();        
       } 
-      */
+
 }
 
 
