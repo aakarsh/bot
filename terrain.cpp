@@ -211,12 +211,9 @@ void Terrain::load_texture(canvas_t map) {
 void Terrain::specifyGeometry() {
   Grid grid = *(this->vertexGrid());
   NormalGrid normals =*(this->vertexNormals());
-        
   
   if(surfaceNormalsEnabled)
-    normals =*(this->surfaceNormals());  
-  
-   cout<<"length "<<this->length<<" width "<<this->width<<endl;
+    normals =*(this->surfaceNormals());
   
   // i was z 
   for(int i = 0; i+1 < this->length; i+= 1) {
@@ -255,8 +252,6 @@ void Terrain::specifyGeometry() {
   
 
 
-
-
   
       if(textureEnabled)
         glTexCoord2f(v1.x/this->width,v1.z/this->length);
@@ -277,7 +272,6 @@ void Terrain::specifyGeometry() {
     }
       glEnd();
   }          
-  //  exit(0);
 }
 
 
@@ -303,18 +297,18 @@ void Terrain::drawTerrain() {
       float scale = 1*this->scale_factor;
       glScalef(scale, scale, scale);        
         
-       // if(displayListEnabled){
-       //   glCallList(dl_id);         
-       // } else{
+       if(displayListEnabled){
+         glCallList(dl_id);         
+       } else{
          specifyGeometry();
-         //       }
+       }
        
       glBindTexture(GL_TEXTURE_2D, 0);      
-      glutSwapBuffers();  
+
 
       for(int i  = 0 ; i <  droids.size() ; i++)  {        
         glPushMatrix();
-        glScalef(.5,.5,.5);
+        //        glScalef(.5,.5,.5);
         android* droid = droids[i];        
         droid->mode = WALKING;  
         Vertex pos = droid->animate(key_frame++);
@@ -331,6 +325,7 @@ void Terrain::drawTerrain() {
         }
         glPopMatrix();        
       } 
+      glutSwapBuffers();  
 
 }
 
