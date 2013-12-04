@@ -1,0 +1,6 @@
+1. Provide a gluLookAt
+
+2. Constraint to change walking direction once it reaches the edge of
+the terrain
+
+3. stop start and pause the animal

@@ -27,6 +27,24 @@ void Camera::setup_perspective(int w,int h ){
     glMatrixMode(GL_MODELVIEW);
 }
 
+void Camera::lookat_android(android* droid){
+  Vertex eye(droid->posx,
+             droid->posy+20,
+             droid->posz -40);
+  
+  //  Vertex eye(this->eyeLocation);
+  Vertex lookat(droid->posx,
+                droid->posy,
+                droid->posz);
+  
+  Vec3d up(0.0,1.0,0.0);
+  
+  
+  gluLookAt(eye.x,eye.y,eye.z,
+            lookat.x,lookat.y,lookat.z,            
+            up.x,up.y,up.z); //up        
+  
+}
 void Camera::setup_lookat(double width,double length){
     Vertex eye(this->eyeLocation);
     Vertex lookat(this->eyeCenter);        
@@ -267,10 +285,10 @@ void Terrain::specifyGeometry() {
         glTexCoord2f(v4.x/this->width,v4.z/this->length);                  
       n4.glNormal();
       v4.gl();
-
       
     }
-      glEnd();
+    glEnd();
+    
   }          
 }
 
@@ -278,7 +296,8 @@ void Terrain::specifyGeometry() {
 
 
 void Terrain::drawTerrain() {  
-      this->camera->setup_perspective(windowWidth,windowHeight);
+  this->camera->setup_perspective(windowWidth,windowHeight);
+  
       glLoadIdentity();
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       glMatrixMode(GL_MODELVIEW);
@@ -291,8 +310,13 @@ void Terrain::drawTerrain() {
         
       if(surfaceNormalsEnabled)
         normals =*(this->surfaceNormals());
+      
 
-      camera->setup_lookat(this->width,this->length);
+      if(droidView)
+        this->camera->lookat_android(droids[currentDroid]);
+      else
+        camera->setup_lookat(this->width,this->length);
+
 
       float scale = 1*this->scale_factor;
       glScalef(scale, scale, scale);        
@@ -308,17 +332,27 @@ void Terrain::drawTerrain() {
 
       for(int i  = 0 ; i <  droids.size() ; i++)  {        
         glPushMatrix();
-        //        glScalef(.5,.5,.5);
         android* droid = droids[i];        
         droid->mode = WALKING;  
         Vertex pos = droid->animate(key_frame++);
         
         if(pos.x+3 < this->length and  pos.z  < this->width) { 
           // height
-          pos.y =  grid[pos.x][pos.z]->v[0].y;
+          double height = 0;
+          for(int i = 0 ; i < 4 ; i++){
+            height+=grid[pos.x][pos.z]->v[i].y;
+          }          
+          pos.y =  height/4;
           // up
-          Vec3d up = normals[pos.x][pos.z]->normal[0];
-          droid->draw(pos,&up);                  
+          
+          Vec3d up;
+          for(int i = 0 ; i < 4 ; i++){
+            up+=normals[pos.x][pos.z]->normal[0];
+          }          
+          up.normalize();
+          
+          droid->draw(pos,&up);
+          
         } else{
           // draw as stationary object
           droid->draw();

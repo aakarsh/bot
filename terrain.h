@@ -49,7 +49,7 @@ public:
 
   void setup_perspective(int w,int h );
 
-
+  void lookat_android(android* droid);
   void setup_lookat(double width,double length);
 
   
@@ -194,6 +194,9 @@ private:
   bool firstPersonMode;
   bool displayListEnabled;
 
+  bool droidView;
+  int currentDroid;
+
   //  VertexMatrix* vertexGrid();
   Grid* vertexGrid() ;
 
@@ -207,6 +210,8 @@ public:
   double scale_factor;  
   MouseControlMode mouseMode;
   vector<android*>  droids;
+
+  
   
  Terrain(int ww,int wh,
          canvas_t& textureMap,
@@ -221,6 +226,8 @@ public:
         texture(textureMap.pixels),
         heights(heightMap.pixels),
         scale_factor(1),
+        droidView(false),
+        currentDroid(0),
         mousePanning(false),
         firstPersonMode(true),
         displayListEnabled(true),  
@@ -240,7 +247,7 @@ public:
   
   void drawTerrain();
   Vertex make_cell(int x, int z);  
-  void add_stuff(android* d){
+  void addDroid(android* d){
     this->droids.push_back(d);
   }
 
@@ -251,6 +258,15 @@ public:
   void toggleTexture(){    
     textureEnabled = !textureEnabled;
     compile_display_list();
+  }
+  
+  void toggleDroidView(){
+    droidView = !droidView;
+  }
+  
+  void nextDroid(){
+    currentDroid = (currentDroid + 1) % droids.size();
+    droidView = true;
   }
   
   void toggleSurfaceNormals(){

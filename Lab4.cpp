@@ -62,7 +62,7 @@ public:
     key_frame(0),
     current_animation(WALKING),
     camera_angle(0),
-    bot_count(20){
+    bot_count(3){
     terrain_setup(height_file,texture_file);    
   }
 
@@ -88,17 +88,17 @@ void Environment::terrain_setup(char* height_file, char* texture_file){
   printf("Loading file '%s'... ", texture_file);
   ppmLoadCanvas(texture_file, &texture);          
   terrain = new Terrain(windowWidth,windowHeight,texture,height);
-  for(int j = 0 ; j < bot_count ; j++) {
+  
+  for(int j = 0 ; j < bot_count ; j++) {    
     android* droid = new android(bot_count%10 +j*10 ,0,0);
     droid->walk_direction.x = rand();
     droid->walk_direction.z = rand();
     droid->walk_direction.normalize();
-    droids.push_back(droid);
-    
+    droids.push_back(droid);    
   }
   
   for(int i = 0 ; i < droids.size(); i ++){
-    terrain->add_stuff(droids[i]);
+    terrain->addDroid(droids[i]);
   }  
 }
 
@@ -217,10 +217,18 @@ void cb_keyboard(unsigned char key, int x, int y) {
  Camera * camera = env->terrain->camera;
  
  switch(key) {
+ case '.':
+   env->terrain->toggleDroidView();
+   break;
+ case '>':
+   env->terrain->nextDroid();
+   break;
  case 'h':
    display_help();
+   break;
  case 'd':
    env->terrain->toggleDisplayList();
+   break;
  case 'l':    
    env->terrain->toggleMouseLighting();
    break;
