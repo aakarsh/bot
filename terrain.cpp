@@ -27,7 +27,7 @@ void Camera::setup_perspective(int w,int h ){
     glMatrixMode(GL_MODELVIEW);
 }
 
-void Camera::setup_lookat(VecMatrix & normals,double width,double length){
+void Camera::setup_lookat(double width,double length){
     Vertex eye(this->eyeLocation);
     Vertex lookat(this->eyeCenter);        
     Vec3d up(0.0,1.0,0.0);
@@ -62,7 +62,7 @@ double Terrain::getHeight(int x,int z) {
   int b = BLUE(px);
   return r;
 }
-
+/*
 VertexMatrix* Terrain::vertexGrid() {
   if(grid.size() > 0){
     return &grid;
@@ -83,31 +83,82 @@ VertexMatrix* Terrain::vertexGrid() {
   }
   return &grid;
 }
+*/
+
+Vertex Terrain::make_cell(int x, int z){
+  return Vertex(x,this->getHeight(x,z),z);
+}
+
+Grid* Terrain::vertexGrid() {
+  if(grid.size() > 0){
+    return &grid;
+  }
+  
+  for(int z=0; z+1 < this->length; z+= 1) {
+    vector<GridCell*> cells;
+    for(int x=0; x+1 < this->width; x+= 1) {
+      // Each grid scell consists of two triangles.      
+      //Triangle 1: v0,v1,v2 [(x,z),(x,z+1),(x+1,z+1)]
+      //Triangle 2:v0,v1,v3 [(x,z),(x+1,z+1),(x+1,z)]
+      cells.push_back(new GridCell(make_cell(x,z), 
+                                   make_cell(x,z+1),
+                                   make_cell(x+1,z+1),
+                                   make_cell(x+1,z)));
 
 
 
-VecMatrix* Terrain::vertexNormals(){  
+    }
+    grid.push_back(cells);
+  }
+  return &grid;
+}
+
+NormalGrid* Terrain::vertexNormals(){  
   if(grid.size() > 0 && normals.size() > 0 ){
     return &normals;
   }
-  for(int z = 0; z < this->length; z+=1) {
+  
+  for(int z = 0; z+1 < this->length; z+=1) {
     bool reverse_winding = true; 
-    vector<Vec3d*> normal_row;
-    for(int x = 0; x+3 < this->width; x+=1) {        
-      Vertex* v[3];
-      v[0] = grid[z][x];
-      v[1] = grid[z][x+1];
-      v[2] = grid[z][x+2];
-      Vec3d nrm = normal(*v[0],*v[1],*v[2]);
-      if(reverse_winding){
-        nrm.reverse();
-        reverse_winding = false;
-      }else{
-        reverse_winding = true;
-      }
-      normal_row.push_back(new Vec3d(nrm));
+    vector<NormalCell*> row;
+    for(int x = 0; x+1 < this->width; x+=1) {        
+      // Vertex* v[3];
+      // v[0] = grid[z][x];
+      // v[1] = grid[z][x+1];
+      // v[2] = grid[z][x+2];
+      GridCell* gc = grid[z][x];
+      Vec3d  n1 = normal((gc->v[0]),
+                         (gc->v[1]),
+                         (gc->v[2]));
+      
+      Vec3d  n2 = normal((gc->v[0]),
+                          (gc->v[2]),
+                          (gc->v[3]));
+
+      NormalCell* nc = new NormalCell(n1,
+                                      n1,
+                                      n2,
+                                      n2);
+
+
+
+
+
+      row.push_back(nc);
+      
+      //      Vec3d nrm = normal(*v[0],*v[1],*v[2]);
+
+      
+      
+      // if(reverse_winding){
+      //   nrm.reverse();
+      //   reverse_winding = false;
+      // }else{
+      //   reverse_winding = true;
+      // }
+      // normal_cell.push_back(new Vec3d(nrm));
     }
-    normals.push_back(normal_row);
+    normals.push_back(row);
   }  
   return &normals;
 }
@@ -117,6 +168,7 @@ VecMatrix* Terrain::surfaceNormals(){
   if(grid.size() > 0 && surface_normals.size() > 0 ){
     return &surface_normals;
   }
+  /*
   for(int z =0 ; z < this->length ; z+=1){
     vector<Vec3d*> surface_normal_row;
     for(int x = 0; x+3 < this->width; x+=1) {
@@ -135,6 +187,7 @@ VecMatrix* Terrain::surfaceNormals(){
     }  
     surface_normals.push_back(surface_normal_row);
   }
+  */
   return &surface_normals;
 }
 
@@ -151,53 +204,78 @@ void Terrain::load_texture(canvas_t map) {
 }
 
 void Terrain::specifyGeometry() {
-  VertexMatrix grid = *(this->vertexGrid());
-  VecMatrix normals =*(this->vertexNormals());
+  Grid grid = *(this->vertexGrid());
+  NormalGrid normals =*(this->vertexNormals());
         
+  /*
   if(surfaceNormalsEnabled)
     normals =*(this->surfaceNormals());  
-
+  */
    cout<<"length "<<this->length<<" width "<<this->width<<endl;
   
   // i was z 
-  for(int i = 0; i < this->length; i+= 1) {
-    glBegin(GL_TRIANGLES);                
-    // 
-    for(int x = 0; x+3 < this->width ; x+=1) {
+  for(int i = 0; i+1 < this->length; i+= 1) {
+
+    for(int x = 0; x+1 < this->width ; x+=1) {     
+      GridCell* gc = grid[i][x];
       
-      if(x > this->width/2){
-        glColor3ub(255,0,0);
-      } else {
-        glColor3ub(255,255,255);
-      }
+      Vertex v1 = gc->v[0];                  
+      Vertex v2 = gc->v[1];                  
+      Vertex v3 = gc->v[2];                  
+      Vertex v4 = gc->v[3];                  
 
-      Vertex* v1 = grid[i][x];                  
-      Vertex* v2 = grid[i][x+1];
-      Vertex* v3 = grid[i][x+2];    
 
-      cout<<"t: "<<"["<<v1->to_s()<<v2->to_s()<<v3->to_s()<<"]"<<endl;
+      NormalCell* nc = normals[i][x];
       
-      Vec3d* normal = normals[i][x];
+      Vec3d n1 = nc->normal[0];                  
+      Vec3d n2 = nc->normal[1];                  
+      Vec3d n3 = nc->normal[2];                  
+      Vec3d n4 = nc->normal[3];                  
 
+      glBegin(GL_TRIANGLES);                
       if(textureEnabled)
-        glTexCoord2f(v1->x/this->width,v1->z/this->length);
-      normal->glNormal();
-      v1->gl();
+        glTexCoord2f(v1.x/this->width,v1.z/this->length);
+      n1.glNormal();
+      v1.gl();
                   
       if(textureEnabled)
-        glTexCoord2f(v2->x/this->width,v2->z/this->length);                  
-      normal->glNormal();
-      v2->gl();
+        glTexCoord2f(v2.x/this->width,v2.z/this->length);                  
+      n2.glNormal();
+      v2.gl();
 
       if(textureEnabled)
-        glTexCoord2f(v3->x/this->width,v3->z/this->length);                  
-      normal->glNormal();
-      v3->gl();      
+        glTexCoord2f(v3.x/this->width,v3.z/this->length);                  
+      n3.glNormal();
+      v3.gl();
+      glEnd();
+
+
+
+
+      glBegin(GL_TRIANGLES);                
+      if(textureEnabled)
+        glTexCoord2f(v1.x/this->width,v1.z/this->length);
+      n1.glNormal();
+      v1.gl();
+                  
+      if(textureEnabled)
+        glTexCoord2f(v3.x/this->width,v3.z/this->length);                  
+      n3.glNormal();
+      v3.gl();
+
+      if(textureEnabled)
+        glTexCoord2f(v4.x/this->width,v4.z/this->length);                  
+      n4.glNormal();
+      v4.gl();
+      glEnd();
+      
     }
-    glEnd();
+
   }          
-  exit(0);
+  //  exit(0);
 }
+
+
 
 
 void Terrain::drawTerrain() {  
@@ -209,13 +287,13 @@ void Terrain::drawTerrain() {
         
       glLoadIdentity();
 
-      VertexMatrix grid = *(this->vertexGrid());
-      VecMatrix normals = *(this->vertexNormals());
+      Grid grid = *(this->vertexGrid());
+      NormalGrid normals = *(this->vertexNormals());
         
-      if(surfaceNormalsEnabled)
-        normals =*(this->surfaceNormals());
+      // if(surfaceNormalsEnabled)
+      //   normals =*(this->surfaceNormals());
 
-      camera->setup_lookat(normals,this->width,this->length);
+      camera->setup_lookat(this->width,this->length);
 
       float scale = 1*this->scale_factor;
       glScalef(scale, scale, scale);        
@@ -234,6 +312,7 @@ void Terrain::drawTerrain() {
       
       glutSwapBuffers();  
 
+      /*
       for(int i  = 0 ; i <  droids.size() ; i++)  {        
         glPushMatrix();
         glScalef(.5,.5,.5);
@@ -252,7 +331,8 @@ void Terrain::drawTerrain() {
           //          droid->draw();
         }
         glPopMatrix();        
-      }      
+      } 
+      */
 }
 
 

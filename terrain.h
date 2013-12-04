@@ -1,5 +1,3 @@
-//#pragma once
-
 #ifndef TERRAIN_H
 #define TERRAIIN_H
 
@@ -52,7 +50,7 @@ public:
   void setup_perspective(int w,int h );
 
 
-  void setup_lookat(VecMatrix & normals,double width,double length);
+  void setup_lookat(double width,double length);
 
   
   Vec3d direction(){
@@ -126,6 +124,38 @@ public:
 
 enum MouseControlMode {NONE, CAMERA_PANNING, VIEW_POINT,LOOKAT_CENTER, LIGHT_MOTION,FIRST_PERSON};
 
+class GridCell {
+public:  
+  Vertex v[4];
+  
+  GridCell(Vertex v1, Vertex v2,
+           Vertex v3, Vertex v4){    
+    v[0] = v1;
+    v[1] = v2;
+    v[2] = v3;
+    v[3] = v4;
+  }  
+};
+
+class NormalCell {
+public:  
+  Vec3d normal[4];
+  
+  NormalCell(Vec3d v1, Vec3d v2,
+           Vec3d v3, Vec3d v4){    
+    normal[0] = v1;
+    normal[1] = v2;
+    normal[2] = v3;
+    normal[3] = v4;
+  }  
+};
+
+
+typedef vector<GridCell*> cell_row;
+typedef vector<cell_row> Grid;
+
+typedef vector<NormalCell*> normal_row;
+typedef vector<normal_row> NormalGrid;
 
 class Terrain{
   
@@ -136,10 +166,13 @@ private:
   
   int width;
   int length;
+  
   pixel_t *heights;
   pixel_t *texture;
-  VertexMatrix grid;
-  VecMatrix normals;
+  
+  Grid grid;
+
+  NormalGrid normals;
   VecMatrix surface_normals;
   vector<Vec3d*> textures;
   
@@ -153,8 +186,10 @@ private:
   bool firstPersonMode;
   bool displayListEnabled;
 
-  VertexMatrix* vertexGrid();
-  VecMatrix* vertexNormals();
+  //  VertexMatrix* vertexGrid();
+  Grid* vertexGrid() ;
+
+  NormalGrid* vertexNormals();
   VecMatrix* surfaceNormals();
 
 public:
@@ -182,7 +217,7 @@ public:
         firstPersonMode(true),
         displayListEnabled(true),  
         textureEnabled(true),
-        surfaceNormalsEnabled(true),
+        surfaceNormalsEnabled(false),
         mouseMode(NONE)
  {
     
@@ -196,7 +231,7 @@ public:
   }
   
   void drawTerrain();
-  
+  Vertex make_cell(int x, int z);  
   void add_stuff(android* d){
     this->droids.push_back(d);
   }
