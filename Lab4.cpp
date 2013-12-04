@@ -62,7 +62,7 @@ public:
     key_frame(0),
     current_animation(WALKING),
     camera_angle(0),
-    bot_count(3){
+    bot_count(5){
     terrain_setup(height_file,texture_file);    
   }
 
@@ -101,26 +101,6 @@ void Environment::terrain_setup(char* height_file, char* texture_file){
     terrain->addDroid(droids[i]);
   }  
 }
-
-void Environment::drawAndroids(){
-    if( droids.size() <= bot_count ){
-      for(int i  = droids.size(); i < bot_count ; i++) {       
-        android* a = new android((i*6)% 16,0,i/3*8);
-        droids.push_back(a);
-      }
-    }  
-
-    if(animate)
-      key_frame++;
-  
-    for(int j = 0; j < droids.size(); j++) {       
-      droids[j]->mode = current_animation;  
-      droids[j]->animate(key_frame);
-      droids[j]->draw();
-    }
-  }
-      
-
 
 
 void cb_idle() {	  
@@ -210,6 +190,7 @@ void display_help() {
 }
 
 void cb_keyboard(unsigned char key, int x, int y) {
+  
  float inc[] = {10.0,0.0,0.0};
  double eyeDirection[3] = {0,0,0};
  double v [3] ;
@@ -308,6 +289,7 @@ void cb_keyboard(unsigned char key, int x, int y) {
    exit(0);
    break;
  }
+ 
 }
 
 

@@ -46,12 +46,17 @@ Also note that you don't need to make lighting work for your animal.
    should be touching the terrain. Moslty submerged
    or obviously floating positions will not get full credit.
    
-5 The animal is rotated according to the normal of the terrain wherever it is placed.
-10 The animal moves across the terrain while animating, either randomly or on a fixed path.
-5 Multiple (at least 3) copies of the animal are displayed.
-5 Provide a control that causes the camera to look at your animal and allows the user to cycle through looking at each copy.
-5 The copies of the animal move independently along different paths (or using different random walks).
-5 Provide controls that can start, pause, and reset the motion of your animals.
+5  The animal is rotated according to the normal of the
+   terrain wherever it is placed.
+10 The animal moves across the terrain while animating,
+   either randomly or on a fixed path.
+5  Multiple (at least 3) copies of the animal are displayed.
+5 Provide a control that causes the camera to look at your animal
+  and allows the user to cycle through looking at each copy.
+5 The copies of the animal move independently along
+  different paths (or using different random walks).
+5 Provide controls that can start, pause, and reset the
+  motion of your animals.
 5 Provide a help message that explains the controls of your program.
 
 

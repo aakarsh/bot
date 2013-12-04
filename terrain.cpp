@@ -62,11 +62,13 @@ void Camera::setup_lookat(double width,double length){
 
 
 void Light::enable(){  
-  GLfloat ambientColor[] = {1.0f, 1.0f, 1.0f, 0.0f};
+  //  GLfloat ambientColor[] = {1.0f, 1.0f, 1.0f, 0.0f};
+  GLfloat ambientColor[] = {.5f, .5f, .5f, 0.0f};
   // Ambient white light 
   glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);	
   // Diffuse white light
-  GLfloat lightColor0[] = {1.0f, 1.0f, 1.0f, 1.0f};
+  //  GLfloat lightColor0[] = {1.0f, 1.0f, 1.0f, 1.0f};
+  GLfloat lightColor0[] = {.3f, .3f, .3f, 0.0f};
   //    GLfloat lightPos0[] = {-0.5f, 0.5f, 0.1f, 0.0f};
   glLightfv(light_id, GL_DIFFUSE, lightColor0);        
   glLightfv(light_id, GL_POSITION, light_position);
@@ -336,7 +338,7 @@ void Terrain::drawTerrain() {
         droid->mode = WALKING;  
         Vertex pos = droid->animate(key_frame++);
         
-        if(pos.x+3 < this->length and  pos.z  < this->width) { 
+        if(pos.x < this->length and  pos.z  < this->width) { 
           // height
           double height = 0;
           for(int i = 0 ; i < 4 ; i++){
@@ -347,7 +349,7 @@ void Terrain::drawTerrain() {
           
           Vec3d up;
           for(int i = 0 ; i < 4 ; i++){
-            up+=normals[pos.x][pos.z]->normal[0];
+            up+=normals[pos.x][pos.z]->normal[i];
           }          
           up.normalize();
           
@@ -355,6 +357,7 @@ void Terrain::drawTerrain() {
           
         } else{
           // draw as stationary object
+          droid->walk_direction.reverse();
           droid->draw();
         }
         glPopMatrix();        

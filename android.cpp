@@ -213,9 +213,10 @@ void android::draw(Vertex pos , Vec3d* up){
   
   Vec3d y_axis(0,1,0);
   Vec3d rotation_axis = cross(this->up,y_axis);
+  rotation_axis.normalize();
   double rot_angle  = angle(this->up,y_axis);
   
-  //glRotatef(rot_angle,rotation_axis.x,rotation_axis.y,rotation_axis.z);
+  glRotatef(rot_angle,rotation_axis.x,rotation_axis.y,rotation_axis.z);
 
   draw();  
   glPopMatrix();

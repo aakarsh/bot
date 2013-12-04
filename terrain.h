@@ -232,7 +232,7 @@ public:
         firstPersonMode(true),
         displayListEnabled(true),  
         textureEnabled(true),
-        surfaceNormalsEnabled(false),
+        surfaceNormalsEnabled(true),
         mouseMode(NONE)
  {
     

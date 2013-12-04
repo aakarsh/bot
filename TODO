@@ -1,6 +1,7 @@
-1. Provide a gluLookAt
-
 2. Constraint to change walking direction once it reaches the edge of
 the terrain
+    Fix seg-fault at boundary
 
 3. stop start and pause the animal
+
+1. Provide a way to look at individual droids as they get added
